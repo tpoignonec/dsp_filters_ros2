@@ -25,15 +25,18 @@ ament_target_dependencies(<the_target> <type> dsp_filters_ros2)
 
 // Or using legacy path :
 #include <DspFilters/Dsp.hpp>
-```
 
+// Prepare mock data
+int numSamples = 50
+int numChannels = 2
 
-## Usage examples
+double* arrayOfChannels[numChannels];
+arrayOfChannels[0] = new double[numSamples];
+arrayOfChannels[1] = new double[numSamples];
 
-```cpp
 // Create a Chebyshev type I Band Stop filter of order 3
 // with state for processing 2 channels of audio.
-Dsp::SimpleFilter <Dsp::ChebyshevI::BandStop <3>, 2> f;
+Dsp::SimpleFilter <Dsp::ChebyshevI::BandStop <3>, numChannels> f;
 f.setup (3,    // order
          44100,// sample rate
          4000, // center frequency
