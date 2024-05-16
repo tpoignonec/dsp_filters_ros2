@@ -26,4 +26,3 @@ ament_target_dependencies(<the_target> <type> dsp_filters_ros2)
 // Or using legacy path :
 #include <DspFilters/Dsp.hpp>
 ```
-

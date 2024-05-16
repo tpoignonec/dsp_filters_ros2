@@ -69,6 +69,45 @@ ament_target_dependencies(${PROJECT_NAME} PUBLIC ${DEPENDENCIES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE "DSP_FILTERS_BUILDING_DLL")
 
 
+# Setup demo software
+#----------------------
+set(src_DIR_DEMO  ${dsp_filters_binaries_SOURCE_DIR}/shared/DSPFiltersDemo/source)
+set(src_DIR_AMALGAM  ${dsp_filters_binaries_SOURCE_DIR}/shared/JuceAmalgam)
+
+file(GLOB SRC_FILES_DEMO ${src_DIR_DEMO}/*.cpp)
+file(GLOB SRC_FILES_AMALGAM ${src_DIR_AMALGAM}/*.cpp)
+
+
+# Setup juce library
+#----------------------
+add_library(juce_amalgam SHARED ${src_DIR_AMALGAM})
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${src_DIR_AMALGAM}>
+  $<INSTALL_INTERFACE:include/juce_amalgam>
+)
+target_compile_definitions(juce_amalgam PRIVATE "JUCE_AMALGAM_BUILDING_DLL")
+target_compile_features(juce_amalgam PRIVATE cxx_std_17)
+set_target_properties(juce_amalgam PROPERTIES LINKER_LANGUAGE CXX)
+
+add_executable(
+  gui_dsp_filters
+  ${SRC_FILES_DEMO}
+)
+target_compile_features(gui_dsp_filters PRIVATE cxx_std_17)
+target_include_directories(
+  gui_dsp_filters
+  PRIVATE
+  "/usr/include/freetype2"
+  $<BUILD_INTERFACE:${include_DIR}>
+  $<BUILD_INTERFACE:${src_DIR_DEMO}>
+  $<BUILD_INTERFACE:${src_DIR_AMALGAM}>
+  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:juce_amalgam>
+)
+target_link_libraries(gui_dsp_filters PRIVATE ${PROJECT_NAME} juce_amalgam freetype)
+
+
 # Testing
 #----------
 if(BUILD_TESTING)
@@ -81,12 +120,10 @@ install(
   DIRECTORY ${include_DIR}
   DESTINATION .
 )
-
 install(
   DIRECTORY ${include_DIR}/DspFilters/
   DESTINATION include/${PROJECT_NAME}
 )
-
 install(TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
   RUNTIME DESTINATION bin
@@ -94,6 +131,21 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION lib
 )
 
+install(
+  DIRECTORY ${src_DIR_AMALGAM}/
+  DESTINATION include/juce_amalgam
+)
+install(TARGETS juce_amalgam
+  EXPORT export_juce_amalgam
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+)
+
+#TODO install gui_dsp_filters
+
+
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_targets(export_juce_amalgam HAS_LIBRARY_TARGET)
 ament_export_dependencies(${DEPENDENCIES})
 ament_package()
