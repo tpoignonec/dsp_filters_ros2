@@ -1,4 +1,4 @@
-# Copyright 2023 ICUBE Laboratory, University of Strasbourg
+# Copyright 2024 ICUBE Laboratory, University of Strasbourg
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17) # Default to C++17
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
-
-find_package(ament_cmake REQUIRED)
 
 find_package(ament_cmake REQUIRED)
 include(FetchContent)
@@ -74,7 +72,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "DSP_FILTERS_BUILDING_DLL")
 # Testing
 #----------
 if(BUILD_TESTING)
-  # TODO: Add tests
+  # TODO: Add some tests?
 endif()
 
 # Install
@@ -85,7 +83,7 @@ install(
 )
 
 install(
-  DIRECTORY ${include_DIR}/DSPFilters
+  DIRECTORY ${include_DIR}/DspFilters/
   DESTINATION include/${PROJECT_NAME}
 )
 
